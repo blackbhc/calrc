@@ -26,10 +26,16 @@ private:
     std::array<double, 3> m_pos{0, 0, 0};
 };
 
-// the polar grid of the target field points to calculate the radial force
-class PolarGrid
+class Grid
 {
 private:
     std::vector<Point> m_points;
+};
+
+// the polar grid of the target field points to calculate the radial force
+class PolarGrid : public Grid
+{
+public:
+    explicit PolarGrid(double Rmin = 0.1, double Rmax = 10, int Rbinnum = 10, int PhiBinNum = 16);
 };
 #endif
