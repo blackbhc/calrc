@@ -6,7 +6,7 @@ Read a standard GADGET4 snapshot file (in HDF5 format) and get the corresponding
 radial force at specified polar grid. It require the galactic center at the origin
 and the disk located in the X-Y plane.
 
----
+______________________________________________________________________
 
 ## Dependencies
 
@@ -18,13 +18,15 @@ and the disk located in the X-Y plane.
 
 - (optional) [`GoogleTest`](https://github.com/google/googletest) for unit test.
 
----
+- (Already integrated) [`cmdline`](https://github.com/tanakh/cmdline) for command line parser.
+
+______________________________________________________________________
 
 ## Installation
 
 To be complemented.
 
----
+______________________________________________________________________
 
 ## Usage
 
