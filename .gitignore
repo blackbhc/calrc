@@ -1,0 +1,13 @@
+bin
+test
+lib
+out
+build
+html
+latex
+test
+tests
+.xmake
+__pycache__
+.cache*
+compile_commands.json
