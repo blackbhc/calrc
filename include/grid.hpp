@@ -1,6 +1,7 @@
 /**
  * @file
- * @brief The polar grid class (target positions) and point class (single target position).
+ * @brief The polar grid class (target positions) and point class (single target
+ * position).
  */
 
 #ifndef GRID_HPP
@@ -9,6 +10,15 @@
 #include <numeric>  // for std::inner_product
 #include <vector>
 
+// an aggregate for the polar grid parameters
+struct PolarGridPara
+{
+    double rmin{};
+    double rmax{};
+    int    Rbinnum{};
+    int    PhiBinNum{};
+};
+
 // convenient interface with a single field point
 class Point
 {
@@ -16,16 +26,14 @@ public:
     // to get inner product with the local unit radial vector
 
     // get local radius
-    [[nodiscard]] auto r() const -> double
-    {
-        auto product = std::inner_product(m_pos.begin(), m_pos.end(), m_pos.begin(), 0.0);
-        return std::sqrt(product);
-    }
+    [[nodiscard]] auto r() const;
 
 private:
     std::array<double, 3> m_pos{0, 0, 0};
 };
 
+// the base grid class, currect only a container of the points, designed for the
+// future extension beyond polar grid
 class Grid
 {
 private:
@@ -36,6 +44,6 @@ private:
 class PolarGrid : public Grid
 {
 public:
-    explicit PolarGrid(double Rmin = 0.1, double Rmax = 10, int Rbinnum = 10, int PhiBinNum = 16);
+    explicit PolarGrid(const PolarGridPara& para);
 };
 #endif
