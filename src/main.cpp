@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
     H5IO rcFile("output.hdf5"sv, H5IO::filemode::write);
     // h5io.write_dataset(results);
 
-    fmt::println("Hello world from {{fmt}}.");
+    fmt::println("Hello world from {{calrc}}.");
 
     return EXIT_SUCCESS;
 }

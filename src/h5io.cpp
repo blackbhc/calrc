@@ -1,10 +1,11 @@
 #include "h5io.hpp"
 #include "H5Ppublic.h"
+#include <utility>
 
+// Open the specified file based on given file mode.
 H5IO::H5IO(std::string_view filename, filemode mode)
-    : m_filename{filename}, m_mode{mode}, m_file_handle(-1)
+    : m_filename{filename}, m_filemode{mode}, m_file_handle(H5I_INVALID_HID)
 {
-    // open the hdf5 file
     switch (get_mode())
     {
     case filemode::read:
@@ -18,9 +19,31 @@ H5IO::H5IO(std::string_view filename, filemode mode)
     }
 }
 
+// close the file if necessary
 H5IO::~H5IO()
 {
-    H5Fclose(m_file_handle);  // close the hdf5 file
+    if (m_file_handle != H5I_INVALID_HID)  // set as H5I_INVALID_HID if moved
+    {
+        H5Fclose(m_file_handle);  // close the hdf5 file
+        m_file_handle = H5I_INVALID_HID;
+    }
     // set the file handle as the sentinel value
-    m_file_handle = -1;
+}
+
+// move assignment operator
+H5IO& H5IO::operator=(H5IO&& another) noexcept
+{
+    m_filename            = another.m_filename;
+    m_filemode            = another.m_filemode;
+    m_file_handle         = another.m_file_handle;
+    another.m_file_handle = H5I_INVALID_HID;
+    return *this;
+}
+
+// move constructor
+H5IO::H5IO(H5IO&& another) noexcept
+    : m_filename{std::move(another.m_filename)}, m_filemode{another.m_filemode},
+      m_file_handle{another.m_file_handle}
+{
+    another.m_file_handle = H5I_INVALID_HID;
 }
