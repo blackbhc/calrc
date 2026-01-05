@@ -12,3 +12,7 @@ target_link_libraries(
 
 enable_testing()
 add_test(NAME test_name COMMAND $<TARGET_FILE:a_basic_test>)
+
+add_executable(parser ./check_parser.cpp)
+target_include_directories(parser PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(parser PRIVATE fmt::fmt-header-only )

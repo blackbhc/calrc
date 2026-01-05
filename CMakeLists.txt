@@ -49,19 +49,19 @@ set(sanitizer_flags
 
 # TARGET PART
 # Excutable
-add_executable(main src/main.cpp src/args_parser.cpp src/grid.cpp)
+add_executable(calrc src/main.cpp src/args_parser.cpp src/grid.cpp)
 if(CMAKE_BUILD_TYPE STREQUAL "Debug") # enable sanitizer in debug mode
-    target_compile_options(main PRIVATE ${sanitizer_flags})
-    target_link_options(main PRIVATE ${sanitizer_flags})
+    target_compile_options(calrc PRIVATE ${sanitizer_flags})
+    target_link_options(calrc PRIVATE ${sanitizer_flags})
 endif()
 # third party library
 find_package(fmt) # use the system installed library
 # add_subdirectory(fmt) # use the nested directory ./fmt/
-target_link_libraries(main fmt::fmt-header-only hdf5) # link the {fmt} lib
-target_include_directories(main PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(calrc fmt::fmt-header-only hdf5) # link the {fmt} lib
+target_include_directories(calrc PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
 add_subdirectory(HighFive)
-target_link_libraries(main HighFive::HighFive)
+target_link_libraries(calrc HighFive::HighFive)
 
 # UNIT TEST PART
 # enable unit tests under ./validation/

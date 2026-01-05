@@ -7,16 +7,25 @@
 #ifndef GRID_HPP
 #define GRID_HPP
 #include <array>
+#include <cstdint>
 #include <numeric>  // for std::inner_product
 #include <vector>
+
+// used to specify whether the radial grid is logarithmic or linear
+enum class RbinType : std::uint8_t
+{
+    log,
+    linear,
+};
 
 // an aggregate for the polar grid parameters
 struct PolarGridPara
 {
-    double rmin{};
-    double rmax{};
-    int    Rbinnum{};
-    int    PhiBinNum{};
+    double   rmin{};
+    double   rmax{};
+    int      rbin{};
+    int      phibin{};
+    RbinType type{};
 };
 
 // convenient interface with a single field point

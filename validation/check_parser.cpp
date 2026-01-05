@@ -1,12 +1,10 @@
-#include "args_parser.hpp"
 #include "cmdline.h"
-#include "grid.hpp"
-#include <iostream>  // NOTE: remove after test
+#include <fmt/base.h>
 
-ArgsParser::ArgsParser(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
     cmdline::parser cmdParser;
-    // add specified type of variable.
+
     // 1st argument is long name
     // 2nd argument is short name (no short name if '\0' specified)
     // 3rd argument is description
@@ -41,24 +39,11 @@ ArgsParser::ArgsParser(int argc, char* argv[])
     // If help flag ('--help' or '-?') is specified, a parser output usage
     // message then exit program.
     cmdParser.parse_check(argc, argv);
-
-    m_snapshot_file       = cmdParser.get<std::string>("if");
-    m_rotation_curve_file = cmdParser.get<std::string>("of");
-    m_rmin                = cmdParser.get<double>("rmin");
-    m_rmax                = cmdParser.get<double>("rmax");
-    m_rbin                = cmdParser.get<int>("rbin");
-    m_phibin              = cmdParser.get<int>("phibin");
-    auto str2type         = [](const std::string& typeStr) {
-        if (typeStr == "linear")
-        {
-            return RbinType::linear;
-        }
-        return RbinType::log;
-    };
-    m_type = str2type(cmdParser.get<std::string>("type"));
-}
-
-auto ArgsParser::get_polar_paras() const -> PolarGridPara
-{
-    return {rmin(), rmax(), rbin(), phibin(), rbintype()};
+    fmt::println("The input file name: {}", cmdParser.get<std::string>("if"));
+    fmt::println("The output file name: {}", cmdParser.get<std::string>("of"));
+    fmt::println("The miminal radius: {}", cmdParser.get<double>("rmin"));
+    fmt::println("The maximal radius: {}", cmdParser.get<double>("rmax"));
+    fmt::println("The radial binnum: {}", cmdParser.get<int>("rbin"));
+    fmt::println("The radial bin type: {}", cmdParser.get<std::string>("type"));
+    fmt::println("The azimuthal binnum: {}", cmdParser.get<int>("phibin"));
 }

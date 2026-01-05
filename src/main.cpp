@@ -17,13 +17,34 @@ int main(int argc, char* argv[])
 {
     // cmd line parameter parser
     const ArgsParser parser(argc, argv);
-    auto             paras = parser.get_polar_paras();
+    auto             paras        = parser.get_polar_paras();
+    auto             snapFileName = parser.infile();
+    auto             rcFileName   = parser.outfile();
+
+#ifdef DEBUG
+    fmt::println("The input snapshot file name: {}", snapFileName);
+    fmt::println("The output radial force file name: {}", rcFileName);
+    fmt::println("The miminal radius: {}", paras.rmin);
+    fmt::println("The maximal radius: {}", paras.rmax);
+    fmt::println("The radial binnum: {}", paras.rbin);
+    auto type2str = [](RbinType type) -> std::string {
+        if (type == RbinType::linear)
+        {
+            return "linear";
+        }
+        return "log";
+    };
+    fmt::println("The radial bin type: {}", type2str(paras.type));
+    fmt::println("The azimuthal binnum: {}", paras.phibin);
+#endif
 
     // create the polar grid
     PolarGrid targetLocs(paras);
 
     // read the hdf5 snapshot file
-    h5file snapshot("snapshot_000.hdf5", h5file::ReadOnly);
+    h5file snapshot(snapFileName, h5file::ReadOnly);
+    // TODO: add a checker for the HighFive::FileException when file not found
+
     // get the particle number of each type
     auto partNums = H5Easy::loadAttribute<std::vector<int>>(snapshot, "Header",
                                                             "NumPart_ThisFile");
@@ -57,7 +78,7 @@ int main(int argc, char* argv[])
     // H5IO rcFile("output.hdf5"sv, H5IO::filemode::write);
     // h5io.write_dataset(results);
 
-    h5file              file("output.hdf5", h5file::Truncate);
+    h5file              file(rcFileName, h5file::Truncate);
     std::vector<double> mock_rs(10, 2.12);
     std::vector<double> mock_phis(10, 3.14 / 2);
     std::vector<double> mock_frs(10, 101);

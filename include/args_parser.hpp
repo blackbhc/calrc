@@ -16,20 +16,24 @@ public:
     ArgsParser(int argc, char* argv[]);
     // get a polar parameter structure after parsing
     [[nodiscard]] auto get_polar_paras() const -> PolarGridPara;
+    [[nodiscard]] auto infile() const { return m_snapshot_file; }
+    [[nodiscard]] auto outfile() const { return m_rotation_curve_file; }
 
 private:
     double      m_rmin{0};  // in kpc
     double      m_rmax{0};
-    int         m_r_binnum{0};
-    int         m_phi_binnum{0};
+    int         m_rbin{0};
+    int         m_phibin{0};
     std::string m_snapshot_file;
     std::string m_rotation_curve_file;
+    RbinType    m_type;
 
     // basic accessers: for internal use
     [[nodiscard]] auto rmin() const { return m_rmin; }
     [[nodiscard]] auto rmax() const { return m_rmax; }
-    [[nodiscard]] auto r_binnum() const { return m_r_binnum; }
-    [[nodiscard]] auto phi_binnum() const { return m_phi_binnum; }
+    [[nodiscard]] auto rbin() const { return m_rbin; }
+    [[nodiscard]] auto phibin() const { return m_phibin; }
+    [[nodiscard]] auto rbintype() const { return m_type; }
 };
 
 #endif
