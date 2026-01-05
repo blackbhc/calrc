@@ -14,11 +14,7 @@ using namespace std::string_view_literals;
 
 int main(int argc, char* argv[])
 {
-    ( void )argc;
-    ( void )argv;
-
     // cmd line parameter parser
-    // parameter_parser(argc, argv);
     const ArgsParser parser(argc, argv);
     auto             paras = parser.get_polar_paras();
 
@@ -26,7 +22,7 @@ int main(int argc, char* argv[])
     PolarGrid targetLocs(paras);
 
     // read the hdf5 snapshot file
-    H5IO snapFile("snapshot_000.hdf5"sv, 'r');
+    H5IO snapFile("snapshot_000.hdf5"sv, H5IO::filemode::read);
 
     // get the snapshot data
     // std::vector<> datasets{read_coordiantes_and_masses()};
@@ -34,7 +30,8 @@ int main(int argc, char* argv[])
     // calculate the radial force at target positions
     // auto resutls = calculate_radial_force(datasets, target_locs);
 
-    H5IO rcFile("output.hdf5"sv, 'w');  // write the results to the log file
+    // write the results to the log file
+    H5IO rcFile("output.hdf5"sv, H5IO::filemode::write);
     // h5io.write_dataset(results);
 
     fmt::println("Hello world from {{fmt}}.");

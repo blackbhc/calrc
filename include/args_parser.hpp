@@ -7,6 +7,7 @@
 #define ARGS_PARSER_HPP
 #include "grid.hpp"
 #include <string>
+
 // enable automatic argument parsing
 class ArgsParser
 {
@@ -17,10 +18,10 @@ public:
     [[nodiscard]] auto get_polar_paras() const -> PolarGridPara;
 
 private:
-    double      m_rmin{};  // in kpc
-    double      m_rmax{};
+    double      m_rmin{0};  // in kpc
+    double      m_rmax{0};
     int         m_r_binnum{0};
-    double      m_phi_binnum{0};
+    int         m_phi_binnum{0};
     std::string m_snapshot_file;
     std::string m_rotation_curve_file;
 
@@ -28,6 +29,7 @@ private:
     [[nodiscard]] auto rmin() const { return m_rmin; }
     [[nodiscard]] auto rmax() const { return m_rmax; }
     [[nodiscard]] auto r_binnum() const { return m_r_binnum; }
-    [[nodiscard]] auto r_phi_binnum() const { return m_phi_binnum; }
+    [[nodiscard]] auto phi_binnum() const { return m_phi_binnum; }
 };
+
 #endif

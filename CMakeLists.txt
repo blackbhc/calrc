@@ -49,7 +49,7 @@ set(sanitizer_flags
 
 # TARGET PART
 # Excutable
-add_executable(main src/main.cpp)
+add_executable(main src/main.cpp src/args_parser.cpp src/h5io.cpp src/grid.cpp)
 if(CMAKE_BUILD_TYPE STREQUAL "Debug") # enable sanitizer in debug mode
     target_compile_options(main PRIVATE ${sanitizer_flags})
     target_link_options(main PRIVATE ${sanitizer_flags})
@@ -57,7 +57,7 @@ endif()
 # third party library
 find_package(fmt) # use the system installed library
 # add_subdirectory(fmt) # use the nested directory ./fmt/
-target_link_libraries(main fmt::fmt-header-only) # link the {fmt} lib
+target_link_libraries(main fmt::fmt-header-only hdf5) # link the {fmt} lib
 target_include_directories(main PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
 # UNIT TEST PART

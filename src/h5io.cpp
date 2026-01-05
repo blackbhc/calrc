@@ -1,44 +1,26 @@
 #include "h5io.hpp"
-#include <cstdio>
-#include <exception>
-#include <fmt/base.h>
-#include <iostream>
+#include "H5Ppublic.h"
 
-namespace {
-
-enum class availabelMode : std::uint8_t
+H5IO::H5IO(std::string_view filename, filemode mode)
+    : m_filename{filename}, m_mode{mode}, m_file_handle(-1)
 {
-    read,
-    write,
-    unknown
-};
-
-auto mode2int(char mode_c) -> availabelMode
-{
-    if (mode_c == 'w')
-    {
-        return availabelMode::write;
-    }
-    if (mode_c == 'r')
-    {
-        return availabelMode::read;
-    }
-
-    return availabelMode::unknown;
-}
-}  // namespace
-
-H5IO::H5IO(std::string_view filename, char mode_c)
-{
-    auto mode = mode2int(mode_c);
-    if (mode == availabelMode::unknown)
-    {
-        fmt::println(stderr, "Unknown mode: {}", mode_c);
-        fmt::println(stderr,
-                     "Only support mode 'w' for write or mode 'r' for read.");
-        throw std::invalid_argument("Unknown hdf5 IO mode");
-    };
-
-    ( void )filename;
     // open the hdf5 file
+    switch (get_mode())
+    {
+    case filemode::read:
+        m_file_handle =
+            H5Fopen(m_filename.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
+        break;
+    case filemode::write:
+        m_file_handle = H5Fcreate(m_filename.c_str(), H5F_ACC_TRUNC,
+                                  H5P_DEFAULT, H5P_DEFAULT);
+        break;
+    }
+}
+
+H5IO::~H5IO()
+{
+    H5Fclose(m_file_handle);  // close the hdf5 file
+    // set the file handle as the sentinel value
+    m_file_handle = -1;
 }
