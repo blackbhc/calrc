@@ -20,6 +20,8 @@ int main(int argc, char* argv[])
     auto             paras        = parser.get_polar_paras();
     auto             snapFileName = parser.infile();
     auto             rcFileName   = parser.outfile();
+    // TODO: check the parameters are logically correct (e.g., rmin<rmax,
+    // rbinnum>1 ...)
 
 #ifdef DEBUG
     fmt::println("The input snapshot file name: {}", snapFileName);
@@ -56,18 +58,20 @@ int main(int argc, char* argv[])
     std::vector<double> mass;
     auto                n = partNums[1];
     mass.resize(n);
-    using Matrix = std::vector<std::vector<double>>;
-    Matrix coordinate(n, std::vector<double>(3));
+    using Matrix = std::vector<std::array<double, 3>>;
+    Matrix coordinate(n, std::array<double, 3>());
     mass.resize(partNums[1]);
 
     mass = H5Easy::load<std::vector<double>>(snapshot, "/PartType1/Masses");
     coordinate = H5Easy::load<Matrix>(snapshot, "/PartType1/Coordinates");
 
-    /* for (int i = 100; i < 110; i++)
+#ifdef DEBUG
+    for (int i = 0; i < 13; i++)
     {
         fmt::println("m={}, (x, y, z)=({}, {}, {})", mass[i], coordinate[i][0],
                      coordinate[i][1], coordinate[i][2]);
-    } */
+    }
+#endif
     // get the snapshot data
     // std::vector<> datasets{read_coordiantes_and_masses()};
 
