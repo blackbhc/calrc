@@ -69,7 +69,6 @@ PolarGrid::PolarGrid(const PolarGridPara& para)
     auto numOfPoint = (para.rbin + 1) * para.phibin;
     m_points.reserve(numOfPoint);  // enlarge the capacity of the list
 
-
     // get the r&phi bin edges
     m_phibinEdges = linspace(0.0, 2 * M_PI, para.phibin, false);  // 0 to 2pi
     if (para.type == RbinType::linear)                            // linear bins
@@ -83,5 +82,14 @@ PolarGrid::PolarGrid(const PolarGridPara& para)
         std::transform(m_rbinEdges.begin(), m_rbinEdges.end(),
                        m_rbinEdges.begin(),
                        [](double r) { return std::pow(10, r); });
+    }
+
+    // create the target filed point
+    for (auto r : m_rbinEdges)
+    {
+        for (auto phi : m_phibinEdges)
+        {
+            m_points.emplace_back(r * std::cos(phi), r * std::sin(phi), 0);
+        }
     }
 };

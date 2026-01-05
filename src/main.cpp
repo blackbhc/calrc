@@ -55,12 +55,10 @@ int main(int argc, char* argv[])
         fmt::println("{} ", num);
     } */
     // read the coordinates and mass of each type
-    std::vector<double> mass;
-    auto                n = partNums[1];
-    mass.resize(n);
+    auto n = partNums[1];
+    std::vector<double> mass(n);
     using Matrix = std::vector<std::array<double, 3>>;
     Matrix coordinate(n, std::array<double, 3>());
-    mass.resize(partNums[1]);
 
     mass = H5Easy::load<std::vector<double>>(snapshot, "/PartType1/Masses");
     coordinate = H5Easy::load<Matrix>(snapshot, "/PartType1/Coordinates");

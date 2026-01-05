@@ -31,6 +31,7 @@ struct PolarGridPara
 class GridPoint
 {
 public:
+    GridPoint(double x, double y, double z) : m_pos({x, y, z}) {}
     // to get inner product with the local unit radial vector
 
     // get local radius

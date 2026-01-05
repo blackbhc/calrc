@@ -1,7 +1,6 @@
 #include "args_parser.hpp"
 #include "cmdline.h"
 #include "grid.hpp"
-#include <iostream>  // NOTE: remove after test
 
 ArgsParser::ArgsParser(int argc, char* argv[])
 {
