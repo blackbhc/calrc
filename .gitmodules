@@ -1,0 +1,8 @@
+[submodule "highfive"]
+	path = highfive
+	url = https://github.com/highfive-devs/highfive.git
+
+[submodule "fmt"]
+	path = fmt
+	url = https://github.com/fmtlib/fmt.git
+
