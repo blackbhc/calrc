@@ -5,8 +5,8 @@
 
 #ifndef NEWTON_HPP
 #define NEWTON_HPP
+#include <array>
+#include <grid.hpp>
+#include <vector>
 // organize the O(N^2) summation process for a single point
-class NewtonianSolver
-{
-};
 #endif

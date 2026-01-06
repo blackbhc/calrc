@@ -41,11 +41,6 @@ public:
     // get the distance to a position restored in a std::array
     distance_from(std::array<double, 3> coordinate) const -> double;
 
-
-    [[nodiscard]] auto  // get the radial component of a force at the point
-    radial_comp(std::array<double, 3> force) const -> double;
-
-
     [[nodiscard]] auto  // inner product of the GridPoint and a std::array
     dot_with(std::array<double, 3> coordinate) const -> double
     {
@@ -59,9 +54,28 @@ public:
         return m_pos;
     }
 
+    /**
+     * @brief calculate the radial force from external mass
+     *
+     * @param masses an std::vector to the masses
+     * @param coordinates an nx3 vector<array> to the coordinates
+     * @param G the corresponding numerical gravitational constant, default
+     * 43007.1 for the default unit of Gadget4 snapshot
+     * @return the radial force (or acceleration, as the test particle is unit
+     * mass)
+     */
+    [[nodiscard]]  // radial force from external material
+    auto accR_from(const std::vector<double>&                masses,
+                   const std::vector<std::array<double, 3>>& coordinates,
+                   double G = 43007.1) const -> double;
+
 private:
     std::array<double, 3> m_pos{0, 0, 0};
-    // to get inner product with the local unit radial vector
+#ifdef DEBUG
+public:
+#endif
+    [[nodiscard]] auto  // get the radial component of a force at the point
+    radial_comp(std::array<double, 3> force) const -> double;
 };
 
 /*

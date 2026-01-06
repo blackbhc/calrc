@@ -4,6 +4,7 @@
 #include <numeric>  // for std::inner_product
 #include <vector>
 
+// NOLINTBEGIN(*internal-linkage)
 #ifdef NDEBUG
 namespace {
 #endif
@@ -39,6 +40,7 @@ auto linspace(double min,
 #ifdef NDEBUG
 }  // namespace
 #endif
+// NOLINTEND(*internal-linkage)
 
 double GridPoint::radius() const
 {
@@ -66,7 +68,7 @@ double GridPoint::distance_from(std::array<double, 3> coordinate) const
 
 double GridPoint::radial_comp(std::array<double, 3> force) const
 {
-    double r = radius();  // radial of the GridPoint
+    const double r = radius();  // radial of the GridPoint
 
     if (r == 0)  // case where the point is at the origin point
     {
@@ -76,13 +78,42 @@ double GridPoint::radial_comp(std::array<double, 3> force) const
             std::inner_product(force.begin(), force.end(), force.begin(), 0.0);
         return std::sqrt(f2);
     }
+
     // scalar product between the force and the unit radial vector when r!=0
     return dot_with(force) / r;
 }
 
+auto GridPoint::accR_from(const std::vector<double>&                masses,
+                          const std::vector<std::array<double, 3>>& coordinates,
+                          double G) const -> double
+{
+    // to restore the Ftot= G \sum{ m delta(r) / r^3 }
+    std::array<double, 3> accSum{0, 0, 0};
+
+    // NOLINTBEGIN(*array-index)
+    // iteration to get the sum without times G
+    for (int i = 0; i < static_cast<int>(masses.size()); ++i)
+    {
+        static double d{};       // for r^3
+        static double scalar{};  // for m/r^3
+        d      = distance_from(coordinates[i]);
+        scalar = masses[i] / (d * d * d);
+        accSum[0] += scalar * (coordinates[i][0] - m_pos[0]);
+        accSum[1] += scalar * (coordinates[i][1] - m_pos[1]);
+        accSum[2] += scalar * (coordinates[i][2] - m_pos[2]);
+    }
+    // times G
+    accSum[0] *= G;
+    accSum[1] *= G;
+    accSum[2] *= G;
+    // NOLINTEND(*array-index)
+
+    return radial_comp(accSum);
+}
+
 PolarGrid::PolarGrid(const PolarGridPara& para)
 {
-    auto numOfPoint = (para.rbin + 1) * para.phibin;
+    const auto numOfPoint = (para.rbin + 1) * para.phibin;
     m_points.reserve(numOfPoint);  // enlarge the capacity of the list
 
     // get the r&phi bin edges
