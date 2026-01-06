@@ -2,6 +2,7 @@
 #include <array>
 #include <cmath>
 #include <numeric>  // for std::inner_product
+#include <vector>
 
 #ifdef NDEBUG
 namespace {
@@ -39,7 +40,7 @@ namespace {
 }  // namespace
 #endif
 
-auto GridPoint::r() const
+double GridPoint::radius() const
 {
     // get the radius of the grid point
     auto r2 =
@@ -48,7 +49,7 @@ auto GridPoint::r() const
 }
 
 // pass by value, since array<double, 3> is cheap to copy
-auto GridPoint::distance_from(std::array<double, 3> coordinate) const
+double GridPoint::distance_from(std::array<double, 3> coordinate) const
 {
     for (int i = 0; i < 3; ++i)  // calculate \Delta\vec{r}
     {
@@ -63,6 +64,21 @@ auto GridPoint::distance_from(std::array<double, 3> coordinate) const
     return std::sqrt(r2);
 }
 
+double GridPoint::radial_comp(std::array<double, 3> force) const
+{
+    double r = radius();  // radial of the GridPoint
+
+    if (r == 0)  // case where the point is at the origin point
+    {
+        // in this case, the result is phyically unclear (or undefiend)
+        // return the norm of the force vector
+        auto f2 =
+            std::inner_product(force.begin(), force.end(), force.begin(), 0.0);
+        return std::sqrt(f2);
+    }
+    // scalar product between the force and the unit radial vector when r!=0
+    return dot_with(force) / r;
+}
 
 PolarGrid::PolarGrid(const PolarGridPara& para)
 {

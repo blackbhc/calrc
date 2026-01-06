@@ -8,6 +8,7 @@
 #define GRID_HPP
 #include <array>
 #include <cstdint>
+#include <numeric>  // for std::inner_product
 #include <vector>
 
 // used to specify whether the radial grid is logarithmic or linear
@@ -32,15 +33,34 @@ class GridPoint
 {
 public:
     GridPoint(double x, double y, double z) : m_pos({x, y, z}) {}
-    // to get inner product with the local unit radial vector
 
-    // get local radius
-    [[nodiscard]] auto r() const;
-    // get the distance to a position restored in a std::array
-    [[nodiscard]] auto distance_from(std::array<double, 3> coordinate) const;
+    [[nodiscard]]  // get local radius
+    auto radius() const -> double;
+
+    [[nodiscard]]  // get the distance to a position restored in a std::array
+    auto distance_from(std::array<double, 3> coordinate) const -> double;
+
+
+    [[nodiscard]]  // get the radial component of a force at the point
+    auto radial_comp(std::array<double, 3> force) const -> double;
+
+
+    [[nodiscard]]  // inner product of the GridPoint and a std::array
+    auto dot_with(std::array<double, 3> coordinate) const -> double
+    {
+        return std::inner_product(m_pos.begin(), m_pos.end(),
+                                  coordinate.begin(), 0.0);
+    }
+
+    [[nodiscard]]  // access the data
+    auto pos() const -> std::array<double, 3>
+    {
+        return m_pos;
+    }
 
 private:
     std::array<double, 3> m_pos{0, 0, 0};
+    // to get inner product with the local unit radial vector
 };
 
 /*
@@ -57,8 +77,18 @@ class PolarGrid
 {
 public:
     explicit PolarGrid(const PolarGridPara& para);
-    auto rs() { return m_rbinEdges; }
-    auto phis() { return m_phibinEdges; }
+
+    [[nodiscard]]  // get the radial bin edges
+    auto rs() -> std::vector<double>
+    {
+        return m_rbinEdges;
+    }
+
+    [[nodiscard]]  // get the azimuthal bin edges
+    auto phis() -> std::vector<double>
+    {
+        return m_phibinEdges;
+    }
 
 private:
     std::vector<GridPoint> m_points;
