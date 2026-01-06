@@ -16,10 +16,10 @@ namespace {
  * @param withRightBound whether include the righter bound
  * @return an std::vector<double> for the bin edges
  */
-[[nodiscard]] auto linspace(double min,
-                            double max,
-                            int    binnum,
-                            bool   withRightBound = true) noexcept
+auto linspace(double min,
+              double max,
+              int    binnum,
+              bool   withRightBound = true) noexcept
 {
     auto delta = (max - min) / binnum;
 
