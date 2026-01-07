@@ -16,7 +16,7 @@ at the origin and the galactic disk is aligned with the **X-Y plane**.
 - [fmt](https://github.com/fmtlib/fmt.git): For formatted output (included as a git submodule).
 - [HighFive](https://github.com/highfive-devs/highfive.git): A C++ header-only interface for HDF5 (included as a git submodule).
 - [cmdline](https://github.com/tanakh/cmdline): A command-line argument parser (already integrated).
-- [GoogleTest](https://github.com/google/googletest) (Optional): For unit testing when build in DEBUG type.
+- [GoogleTest](https://github.com/google/googletest) (Optional): For unit testing when build in DEBUG mode.
 
 ---
 
