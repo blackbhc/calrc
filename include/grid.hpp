@@ -7,6 +7,7 @@
 #ifndef GRID_HPP
 #define GRID_HPP
 #include <array>
+#include <cmath>
 #include <cstdint>
 #include <numeric>  // for std::inner_product
 #include <vector>

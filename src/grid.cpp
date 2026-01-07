@@ -10,6 +10,9 @@
 #ifdef NDEBUG
 namespace {  // anonymous namespace in Release mode
 #endif
+
+constexpr auto PI = 3.14159265358979323846264338327950288;
+
 /**
  * @brief mock numpy.linspace(0)
  *
@@ -110,7 +113,7 @@ PolarGrid::PolarGrid(const PolarGridPara& para)
 
     // get the r&phi bin edges
     // phi bin edges: between 0 and 2pi(without, since as 2pi~0)
-    m_phibinEdges = linspace(0.0, 2 * M_PI, para.phibin, false);
+    m_phibinEdges = linspace(0.0, 2 * PI, para.phibin, false);
     // radial bin edges
     if (para.type == RbinType::linear)  // linear bins
     {
