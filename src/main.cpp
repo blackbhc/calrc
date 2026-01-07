@@ -6,9 +6,11 @@
 
 #include "args_parser.hpp"
 #include "grid.hpp"
+#include <cstdio>
 #include <cstdlib>
 #include <fmt/base.h>  // for format print
 #include <highfive/H5Easy.hpp>
+#include <stdexcept>
 #include <vector>
 using namespace std::string_view_literals;
 using h5file = H5Easy::File;
@@ -22,25 +24,21 @@ int main(int argc, char* argv[])
     auto             snapFileName = parser.infile();
     auto             rcFileName   = parser.outfile();
     auto             numThread    = parser.threads();
-    // TODO: check the parameters are logically correct (e.g., rmin<rmax,
-    // rbinnum>1 ...)
-
-#ifdef DEBUG
-    fmt::println("The input snapshot file name: {}", snapFileName);
-    fmt::println("The output radial force file name: {}", rcFileName);
-    fmt::println("The miminal radius: {}", paras.rmin);
-    fmt::println("The maximal radius: {}", paras.rmax);
-    fmt::println("The radial binnum: {}", paras.rbin);
-    auto type2str = [](RbinType type) -> std::string {
-        if (type == RbinType::linear)
+    // NOTE: bouncer for logical validness
+    if (paras.rmax <= paras.rmin)
+    {
+        throw std::runtime_error("rmax must be larger than rmin");
+    }
+    if (paras.rmin == 0)
+    {
+        fmt::print(stderr, "Warning: Get a minimum radius=0, which set grid "
+                           "points at the origin point.\n");
+        if (paras.type == RbinType::log)
         {
-            return "linear";
+            throw std::runtime_error(
+                "logarithmic radial bins is invalid when rmin=0");
         }
-        return "log";
-    };
-    fmt::println("The radial bin type: {}", type2str(paras.type));
-    fmt::println("The azimuthal binnum: {}", paras.phibin);
-#endif
+    }
 
     // create the polar grid
     PolarGrid testPoints(paras);
@@ -57,7 +55,7 @@ int main(int argc, char* argv[])
 
     for (int i = 0; i < static_cast<int>(partNums.size()); ++i)
     {
-        auto n = partNums[i];
+        auto n = partNums[i];  // get the particle numbers
 
         if (n <= 0)  // ignore 0 partile types
         {
@@ -74,7 +72,7 @@ int main(int argc, char* argv[])
 
         // calculate the radial force at target positions
         auto accRs = testPoints.cal_accR_from(masses, coordinates, numThread);
-
+        // write the accelerations
         H5Easy::dump(logFile, fmt::format("/PartType{}/AccRs", i), accRs);
     }
 
