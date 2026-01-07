@@ -24,6 +24,7 @@ private:
     double      m_rmax{0};
     int         m_rbin{0};
     int         m_phibin{0};
+    int         m_threads{0};
     std::string m_snapshot_file;
     std::string m_rotation_curve_file;
     RbinType    m_type;
@@ -34,6 +35,7 @@ private:
     [[nodiscard]] auto rbin() const { return m_rbin; }
     [[nodiscard]] auto phibin() const { return m_phibin; }
     [[nodiscard]] auto rbintype() const { return m_type; }
+    [[nodiscard]] auto threads() const { return m_threads; }
 };
 
 #endif

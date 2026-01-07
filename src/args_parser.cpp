@@ -34,6 +34,9 @@ ArgsParser::ArgsParser(int argc, char* argv[])
                                "log",
                                cmdline::oneof<std::string>("linear", "log"));
 
+    cmdParser.add<int>("thread", 'c', "Thread count", false, 4,
+                       cmdline::range(1, 72 * 4));
+
     // Run parser.
     // It returns only if command line arguments are valid.
     // If arguments are invalid, a parser output error msgs then exit program.
@@ -47,6 +50,7 @@ ArgsParser::ArgsParser(int argc, char* argv[])
     m_rmax                = cmdParser.get<double>("rmax");
     m_rbin                = cmdParser.get<int>("rbin");
     m_phibin              = cmdParser.get<int>("phibin");
+    m_threads             = cmdParser.get<int>("thread");
     auto str2type         = [](const std::string& typeStr) {
         if (typeStr == "linear")
         {

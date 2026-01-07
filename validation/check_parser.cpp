@@ -5,6 +5,7 @@ int main(int argc, char* argv[])
 {
     cmdline::parser cmdParser;
 
+    // add specified type of variable.
     // 1st argument is long name
     // 2nd argument is short name (no short name if '\0' specified)
     // 3rd argument is description
@@ -33,6 +34,9 @@ int main(int argc, char* argv[])
                                "log",
                                cmdline::oneof<std::string>("linear", "log"));
 
+    cmdParser.add<int>("thread", 'c', "Thread count", false, 4,
+                       cmdline::range(1, 72 * 4));
+
     // Run parser.
     // It returns only if command line arguments are valid.
     // If arguments are invalid, a parser output error msgs then exit program.
@@ -46,4 +50,5 @@ int main(int argc, char* argv[])
     fmt::println("The radial binnum: {}", cmdParser.get<int>("rbin"));
     fmt::println("The radial bin type: {}", cmdParser.get<std::string>("type"));
     fmt::println("The azimuthal binnum: {}", cmdParser.get<int>("phibin"));
+    fmt::println("The thread cout: {}", cmdParser.get<int>("thread"));
 }
