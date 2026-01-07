@@ -60,12 +60,12 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug") # enable sanitizer in debug mode
     target_link_options(calrc PRIVATE ${sanitizer_flags})
 endif()
 # third party library
-find_package(fmt) # use the system installed library
+add_subdirectory(fmt) # use the system installed library
 # link required libraries
 target_link_libraries(calrc fmt::fmt-header-only hdf5 OpenMP::OpenMP_CXX)
 target_include_directories(calrc PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
-add_subdirectory(HighFive)
+add_subdirectory(highfive)
 target_link_libraries(calrc HighFive::HighFive)
 
 # UNIT TEST PART
