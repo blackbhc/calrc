@@ -6,13 +6,14 @@
 
 #include "args_parser.hpp"
 #include "grid.hpp"
+#include <array>
 #include <cstdio>
 #include <cstdlib>
 #include <fmt/base.h>  // for format print
 #include <highfive/H5Easy.hpp>
 #include <stdexcept>
+#include <string>
 #include <vector>
-using namespace std::string_view_literals;
 using h5file = H5Easy::File;
 using Matrix = std::vector<std::array<double, 3>>;
 
@@ -42,7 +43,7 @@ int main(int argc, char* argv[])
     }
 
     // create the polar grid
-    PolarGrid testPoints(paras);
+    const PolarGrid testPoints(paras);
 
     // read the hdf5 snapshot file
     h5file snapshot(snapFileName, h5file::ReadOnly);
