@@ -85,7 +85,7 @@ int main(int argc, char* argv[])
     // write the basic parameters
     H5Easy::dumpAttribute(logFile, "/", "Rmin", paras.rmin);
     H5Easy::dumpAttribute(logFile, "/", "Rmax", paras.rmax);
-    H5Easy::dumpAttribute(logFile, "/", "RbinNum", paras.rbin + 1);
+    H5Easy::dumpAttribute(logFile, "/", "RBinNum", paras.rbin + 1);
     H5Easy::dumpAttribute(logFile, "/", "PhiBinNum", paras.phibin);
 
     // write the bin edges

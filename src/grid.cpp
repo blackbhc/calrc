@@ -1,9 +1,9 @@
 #include "grid.hpp"
+#include <algorithm>
 #include <array>
 #include <cmath>
 #include <numeric>  // for std::inner_product
 #include <omp.h>
-#include <thread>
 #include <vector>
 
 // NOLINTBEGIN(*internal-linkage)
