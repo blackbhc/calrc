@@ -110,3 +110,6 @@ For each particle type (e.g., `PartType0`, `PartType1`, ...), a corresponding gr
 | Dataset Name | Shape                   | Type    | Description                                                                          |
 | ------------ | ----------------------- | ------- | ------------------------------------------------------------------------------------ |
 | `AccRs`      | `(RBinNum × PhiBinNum)` | `float` | Radial acceleration contribution from particle type `X` evaluated on the polar grid. |
+
+Following the usual physical convention, the outward direction is defined as
+positive, and the acceleration is therefore frequently negative.
