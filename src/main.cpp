@@ -9,7 +9,7 @@
 #include <cstdlib>
 #include <fmt/base.h>  // for format print
 #include <highfive/H5Easy.hpp>
-#include <string_view>
+#include <vector>
 using namespace std::string_view_literals;
 using h5file = H5Easy::File;
 using Matrix = std::vector<std::array<double, 3>>;
