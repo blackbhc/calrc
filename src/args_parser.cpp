@@ -25,17 +25,17 @@ ArgsParser::ArgsParser(int argc, char* argv[])
                           cmdline::range(0.0, 1000000.0));
 
     cmdParser.add<int>("rbin", 'm', "radial bin number", true, 10,
-                       cmdline::range(0, 10000000));
+                       cmdline::range(1, 10000000));
     cmdParser.add<int>("phibin", 'n', "azimuthal bin number", false, 16,
-                       cmdline::range(0, 36000));
+                       cmdline::range(1, 36000));
 
     // cmdline::oneof() can restrict options.
     cmdParser.add<std::string>("type", 't', "form of the radial bins", false,
                                "log",
                                cmdline::oneof<std::string>("linear", "log"));
 
-    cmdParser.add<int>("thread", 'c', "Thread count", false, 4,
-                       cmdline::range(1, 72 * 4));
+    cmdParser.add<int>("thread", 'c', "Thread count", false, 1,
+                       cmdline::range(1, 720));
 
     // Run parser.
     // It returns only if command line arguments are valid.
