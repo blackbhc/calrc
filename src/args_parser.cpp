@@ -17,7 +17,7 @@ ArgsParser::ArgsParser(int argc, char* argv[])
     cmdParser.add<std::string>("if", 'i', "input file (usually, a snapshot)",
                                true, "");
     cmdParser.add<std::string>(
-        "of", 'o', "output file of the radial velocities", false, "rc.hdf5");
+        "of", 'o', "output file of the radial velocities", false, "acc.hdf5");
 
     cmdParser.add<double>("rmin", 'r', "minimum radius in kpc", false, 0.0,
                           cmdline::range(0.0, 1000000.0));
