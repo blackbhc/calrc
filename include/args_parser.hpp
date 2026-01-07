@@ -13,21 +13,29 @@ class ArgsParser
 {
 public:
     // use char*, compatible with the main args convention
-    ArgsParser(int argc, char* argv[]);
+    ArgsParser(int argc, char* argv[]);  // NOLINT(*c-arrays)
     // get a polar parameter structure after parsing
     [[nodiscard]] auto get_polar_paras() const -> PolarGridPara;
-    [[nodiscard]] auto infile() const { return m_snapshot_file; }
-    [[nodiscard]] auto outfile() const { return m_rotation_curve_file; }
+    [[nodiscard]] auto  // accesser to the in file name
+    infile() const -> const std::string&
+    {
+        return m_snapshot_file;
+    }
+    [[nodiscard]] auto  // accesser to the out file name
+    outfile() const -> const std::string&
+    {
+        return m_acc_file;
+    }
     [[nodiscard]] auto threads() const { return m_threads; }
 
 private:
     double      m_rmin{0};  // in kpc
     double      m_rmax{0};
-    int         m_rbin{0};
+    int         m_rbin{0};  // bin counts
     int         m_phibin{0};
-    int         m_threads{0};
+    int         m_threads{0};  // thread count
     std::string m_snapshot_file;
-    std::string m_rotation_curve_file;
+    std::string m_acc_file;
     RbinType    m_type;
 
     // basic accessers: for internal use

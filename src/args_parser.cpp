@@ -1,8 +1,10 @@
 #include "args_parser.hpp"
 #include "cmdline.h"
 #include "grid.hpp"
+#include <string>
 
-ArgsParser::ArgsParser(int argc, char* argv[])
+// use the cmdline librady to parsing the cmd args
+ArgsParser::ArgsParser(int argc, char* argv[])  // NOLINT(*c-arrays)
 {
     cmdline::parser cmdParser;
     // add specified type of variable.
@@ -14,26 +16,28 @@ ArgsParser::ArgsParser(int argc, char* argv[])
     // false)
     // 6th argument is extra constraint
 
+    // in&out filename
     cmdParser.add<std::string>("if", 'i', "input file (usually, a snapshot)",
                                true, "");
     cmdParser.add<std::string>(
         "of", 'o', "output file of the radial velocities", false, "acc.hdf5");
-
+    // radial range
     cmdParser.add<double>("rmin", 'r', "minimum radius in kpc", false, 0.0,
                           cmdline::range(0.0, 1000000.0));
     cmdParser.add<double>("rmax", 'R', "maximum radius in kpc", true, 0.0,
                           cmdline::range(0.0, 1000000.0));
-
+    // bin counts
     cmdParser.add<int>("rbin", 'm', "radial bin number", true, 10,
                        cmdline::range(1, 10000000));
     cmdParser.add<int>("phibin", 'n', "azimuthal bin number", false, 16,
                        cmdline::range(1, 36000));
 
+    // type of radial bins
     // cmdline::oneof() can restrict options.
     cmdParser.add<std::string>("type", 't', "form of the radial bins", false,
                                "log",
                                cmdline::oneof<std::string>("linear", "log"));
-
+    // thread count
     cmdParser.add<int>("thread", 'c', "Thread count", false, 1,
                        cmdline::range(1, 720));
 
@@ -44,14 +48,15 @@ ArgsParser::ArgsParser(int argc, char* argv[])
     // message then exit program.
     cmdParser.parse_check(argc, argv);
 
-    m_snapshot_file       = cmdParser.get<std::string>("if");
-    m_rotation_curve_file = cmdParser.get<std::string>("of");
-    m_rmin                = cmdParser.get<double>("rmin");
-    m_rmax                = cmdParser.get<double>("rmax");
-    m_rbin                = cmdParser.get<int>("rbin");
-    m_phibin              = cmdParser.get<int>("phibin");
-    m_threads             = cmdParser.get<int>("thread");
-    auto str2type         = [](const std::string& typeStr) {
+    // update the values
+    m_snapshot_file = cmdParser.get<std::string>("if");
+    m_acc_file      = cmdParser.get<std::string>("of");
+    m_rmin          = cmdParser.get<double>("rmin");
+    m_rmax          = cmdParser.get<double>("rmax");
+    m_rbin          = cmdParser.get<int>("rbin");
+    m_phibin        = cmdParser.get<int>("phibin");
+    m_threads       = cmdParser.get<int>("thread");
+    auto str2type   = [](const std::string& typeStr) {
         if (typeStr == "linear")
         {
             return RbinType::linear;
@@ -61,6 +66,7 @@ ArgsParser::ArgsParser(int argc, char* argv[])
     m_type = str2type(cmdParser.get<std::string>("type"));
 }
 
+// return a PolarGridPara struct by aggregating the cmd args
 auto ArgsParser::get_polar_paras() const -> PolarGridPara
 {
     return {rmin(), rmax(), rbin(), phibin(), rbintype()};

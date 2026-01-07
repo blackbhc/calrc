@@ -19,11 +19,12 @@ using Matrix = std::vector<std::array<double, 3>>;
 int main(int argc, char* argv[])
 {
     // cmd line parameter parser
-    const ArgsParser parser(argc, argv);
-    auto             paras        = parser.get_polar_paras();
-    auto             snapFileName = parser.infile();
-    auto             rcFileName   = parser.outfile();
-    auto             numThread    = parser.threads();
+    const ArgsParser   parser(argc, argv);
+    auto               paras        = parser.get_polar_paras();
+    const std::string& snapFileName = parser.infile();
+    // use const reference since HighFive use c++14
+    const std::string& rcFileName = parser.outfile();
+    auto               numThread  = parser.threads();
     // NOTE: bouncer for logical validness
     if (paras.rmax <= paras.rmin)
     {
