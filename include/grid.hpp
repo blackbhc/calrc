@@ -98,13 +98,13 @@ public:
     explicit PolarGrid(const PolarGridPara& para);
 
     [[nodiscard]] auto  // get the radial bin edges
-    rEdges() -> std::vector<double>
+    rEdges() const -> std::vector<double>
     {
         return m_rbinEdges;
     }
 
     [[nodiscard]] auto  // get the azimuthal bin edges
-    phiEdges() -> std::vector<double>
+    phiEdges() const -> std::vector<double>
     {
         return m_phibinEdges;
     }
