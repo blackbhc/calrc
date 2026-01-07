@@ -34,8 +34,11 @@ class GridPoint
 public:
     GridPoint(double x, double y, double z) : m_pos({x, y, z}) {}
 
-    [[nodiscard]] auto  // get local radius
-    radius() const -> double;
+    [[nodiscard]] auto  // get the cylindrical radius of the point
+    cyl_radius() const -> double
+    {
+        return std::sqrt(m_pos[0] * m_pos[0] + m_pos[1] * m_pos[1]);
+    }
 
     [[nodiscard]] auto
     // get the distance to a position restored in a std::array
@@ -75,7 +78,7 @@ private:
 public:
 #endif
     [[nodiscard]] auto  // get the radial component of a force at the point
-    radial_comp(std::array<double, 3> force) const -> double;
+    cyl_radial_comp(std::array<double, 3> force) const -> double;
 };
 
 /*

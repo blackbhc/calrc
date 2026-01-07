@@ -8,7 +8,7 @@
 
 // NOLINTBEGIN(*internal-linkage)
 #ifdef NDEBUG
-namespace {
+namespace {  // anonymous namespace in Release mode
 #endif
 /**
  * @brief mock numpy.linspace(0)
@@ -24,9 +24,9 @@ auto linspace(double min,
               int    binnum,
               bool   withRightBound = true) noexcept
 {
-    auto delta = (max - min) / binnum;
+    auto delta = (max - min) / binnum;  // get the bin size
 
-    auto effBinNum{binnum + 1};
+    auto effBinNum{binnum + 1};  // default: include the right most bin edges
     if (not withRightBound)
     {
         --effBinNum;
@@ -35,6 +35,7 @@ auto linspace(double min,
     std::vector<double> bin_edges(effBinNum, 0);
     for (int i = 0; i < effBinNum; ++i)
     {
+        // get the bin edged with linear increment
         bin_edges[i] = min + (delta * i);
     }
     return bin_edges;
@@ -44,22 +45,12 @@ auto linspace(double min,
 #endif
 // NOLINTEND(*internal-linkage)
 
-double GridPoint::radius() const
-{
-    // get the radius of the grid point
-    auto r2 =
-        std::inner_product(m_pos.begin(), m_pos.end(), m_pos.begin(), 0.0);
-    return std::sqrt(r2);
-}
-
 // pass by value, since array<double, 3> is cheap to copy
 double GridPoint::distance_from(std::array<double, 3> coordinate) const
 {
     for (int i = 0; i < 3; ++i)  // calculate \Delta\vec{r}
     {
-        // NOLINTBEGIN(*array-index)
-        coordinate[i] -= m_pos[i];
-        // NOLINTEND(*array-index)
+        coordinate[i] -= m_pos[i];  // NOLINT(*array-index)
     }
 
     // get the norm through inner product
@@ -68,21 +59,19 @@ double GridPoint::distance_from(std::array<double, 3> coordinate) const
     return std::sqrt(r2);
 }
 
-double GridPoint::radial_comp(std::array<double, 3> force) const
+double GridPoint::cyl_radial_comp(std::array<double, 3> force) const
 {
-    const double r = radius();  // radial of the GridPoint
+    const double R = cyl_radius();  // cylindrical radial of the GridPoint
 
-    if (r == 0)  // case where the point is at the origin point
+    if (R == 0)  // case where the point is located at the z axis
     {
         // in this case, the result is phyically unclear (or undefiend)
-        // return the norm of the force vector
-        auto f2 =
-            std::inner_product(force.begin(), force.end(), force.begin(), 0.0);
-        return std::sqrt(f2);
+        // return the norm of the force vector projected on the xy plane
+        return std::sqrt(force[0] * force[0] + force[1] * force[1]);
     }
 
     // scalar product between the force and the unit radial vector when r!=0
-    return dot_with(force) / r;
+    return (force[0] * m_pos[0] + force[1] * m_pos[1]) / R;
 }
 
 auto GridPoint::accR_from(const std::vector<double>&                masses,
@@ -100,17 +89,18 @@ auto GridPoint::accR_from(const std::vector<double>&                masses,
         static double scalar{};  // for m/r^3
         d      = distance_from(coordinates[i]);
         scalar = masses[i] / (d * d * d);
+        // acceleration (/G)= \sum m\Delta(r)/|\Delta(r)|^3
         accSum[0] += scalar * (coordinates[i][0] - m_pos[0]);
         accSum[1] += scalar * (coordinates[i][1] - m_pos[1]);
         accSum[2] += scalar * (coordinates[i][2] - m_pos[2]);
     }
-    // times G
+    // times G afterward, to avoid redundant multiplication
     accSum[0] *= G;
     accSum[1] *= G;
     accSum[2] *= G;
     // NOLINTEND(*array-index)
 
-    return radial_comp(accSum);
+    return cyl_radial_comp(accSum);
 }
 
 PolarGrid::PolarGrid(const PolarGridPara& para)
@@ -119,12 +109,14 @@ PolarGrid::PolarGrid(const PolarGridPara& para)
     m_points.reserve(numOfPoint);  // enlarge the capacity of the list
 
     // get the r&phi bin edges
-    m_phibinEdges = linspace(0.0, 2 * M_PI, para.phibin, false);  // 0 to 2pi
-    if (para.type == RbinType::linear)                            // linear bins
+    // phi bin edges: between 0 and 2pi(without, since as 2pi~0)
+    m_phibinEdges = linspace(0.0, 2 * M_PI, para.phibin, false);
+    // radial bin edges
+    if (para.type == RbinType::linear)  // linear bins
     {
         m_rbinEdges = linspace(para.rmin, para.rmax, para.rbin, true);
     }
-    else  // logarithmic bins
+    else  // logarithmic bins: logarithmically linear
     {
         m_rbinEdges = linspace(std::log10(para.rmin), std::log10(para.rmax),
                                para.rbin, true);
@@ -151,15 +143,18 @@ auto PolarGrid::cal_accR_from(
     ( void )numThread;
     std::vector<double> accR(m_points.size(), 0);
     // clang-format off
+// accelerating the calculation with OpneMP
 #pragma omp parallel for num_threads(numThread) default(none) shared(accR, masses, coordinates)
     for (int i = 0; i < static_cast<int>(m_points.size()); ++i) // i must be int for openmp to work
     {
+        // get the accR at each grid point
         accR[i] = m_points[i].accR_from(masses, coordinates);  // with default G
     }
     // clang-format on
     return accR;
 }
 
+// return the radius of the used grid points
 auto PolarGrid::rs() const -> std::vector<double>
 {
     std::vector<double> rs;
@@ -175,6 +170,7 @@ auto PolarGrid::rs() const -> std::vector<double>
     return rs;
 }
 
+// return the azimuthal angles of the used grid points
 auto PolarGrid::phis() const -> std::vector<double>
 {
     std::vector<double> phis;
