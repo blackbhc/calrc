@@ -18,6 +18,9 @@ at the origin and the galactic disk is aligned with the **X-Y plane**.
 - [cmdline](https://github.com/tanakh/cmdline): A command-line argument parser (already integrated).
 - [GoogleTest](https://github.com/google/googletest) (Optional): For unit testing when build in DEBUG mode.
 
+Note: the compiler is configured at the 6th line of ./CMakeLists.txt, default
+to the system compiler. Make sure it supports C++17 and OpenMP before continue.
+
 ---
 
 ## Installation
