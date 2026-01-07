@@ -10,13 +10,13 @@ at the origin and the galactic disk is aligned with the **X-Y plane**.
 
 ## Dependencies
 
-- **C++ Compiler**: Supports at least C++17.
-- **[HDF5](https://www.hdfgroup.org/solutions/hdf5/)**: For high-performance file I/O.
-- **[CMake](https://cmake.org/)**: Version 3.13 or higher.
-- **[fmt](https://github.com/fmtlib/fmt.git)**: For formatted output (included as a git submodule).
-- **[HighFive](https://github.com/highfive-devs/highfive.git)**: A C++ header-only interface for HDF5 (included as a git submodule).
-- **[cmdline](https://github.com/tanakh/cmdline)**: A command-line argument parser (already integrated).
-- **[GoogleTest](https://github.com/google/googletest)** (Optional): For unit testing when build in DEBUG type.
+- **C++** Compiler: Supports at least C++17 with [OpenMP](https://www.openmp.org/) integrated.
+- [HDF5](https://www.hdfgroup.org/solutions/hdf5/): For high-performance file I/O.
+- [CMake](https://cmake.org/): Version 3.13 or higher.
+- [fmt](https://github.com/fmtlib/fmt.git): For formatted output (included as a git submodule).
+- [HighFive](https://github.com/highfive-devs/highfive.git): A C++ header-only interface for HDF5 (included as a git submodule).
+- [cmdline](https://github.com/tanakh/cmdline): A command-line argument parser (already integrated).
+- [GoogleTest](https://github.com/google/googletest) (Optional): For unit testing when build in DEBUG type.
 
 ---
 
