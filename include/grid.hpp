@@ -94,16 +94,26 @@ public:
     explicit PolarGrid(const PolarGridPara& para);
 
     [[nodiscard]] auto  // get the radial bin edges
-    rs() -> std::vector<double>
+    rEdges() -> std::vector<double>
     {
         return m_rbinEdges;
     }
 
     [[nodiscard]] auto  // get the azimuthal bin edges
-    phis() -> std::vector<double>
+    phiEdges() -> std::vector<double>
     {
         return m_phibinEdges;
     }
+
+    [[nodiscard]] auto  // calculate the radial force from external material
+    cal_accR_from(const std::vector<double>&                masses,
+                  const std::vector<std::array<double, 3>>& coordinates,
+                  int numThread) const -> std::vector<double>;
+
+    [[nodiscard]] auto  // get the radius of the used grid points
+    rs() const -> std::vector<double>;
+    [[nodiscard]] auto  // get the phis of the used grid points
+    phis() const -> std::vector<double>;
 
 private:
     std::vector<GridPoint> m_points;

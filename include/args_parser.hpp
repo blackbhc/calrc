@@ -18,6 +18,7 @@ public:
     [[nodiscard]] auto get_polar_paras() const -> PolarGridPara;
     [[nodiscard]] auto infile() const { return m_snapshot_file; }
     [[nodiscard]] auto outfile() const { return m_rotation_curve_file; }
+    [[nodiscard]] auto threads() const { return m_threads; }
 
 private:
     double      m_rmin{0};  // in kpc
@@ -35,7 +36,6 @@ private:
     [[nodiscard]] auto rbin() const { return m_rbin; }
     [[nodiscard]] auto phibin() const { return m_phibin; }
     [[nodiscard]] auto rbintype() const { return m_type; }
-    [[nodiscard]] auto threads() const { return m_threads; }
 };
 
 #endif

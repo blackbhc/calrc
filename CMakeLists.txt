@@ -48,16 +48,21 @@ set(sanitizer_flags
 )
 
 # TARGET PART
-# Excutable
-add_executable(calrc src/main.cpp src/args_parser.cpp src/grid.cpp)
+# Intermediate objects
+find_package(OpenMP REQUIRED)
+add_library(grid_obj OBJECT src/grid.cpp)
+target_include_directories(grid_obj PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(grid_obj PRIVATE OpenMP::OpenMP_CXX)
+# Final cmd executable
+add_executable(calrc src/main.cpp src/args_parser.cpp $<TARGET_OBJECTS:grid_obj>)
 if(CMAKE_BUILD_TYPE STREQUAL "Debug") # enable sanitizer in debug mode
     target_compile_options(calrc PRIVATE ${sanitizer_flags})
     target_link_options(calrc PRIVATE ${sanitizer_flags})
 endif()
 # third party library
 find_package(fmt) # use the system installed library
-# add_subdirectory(fmt) # use the nested directory ./fmt/
-target_link_libraries(calrc fmt::fmt-header-only hdf5) # link the {fmt} lib
+# link required libraries
+target_link_libraries(calrc fmt::fmt-header-only hdf5 OpenMP::OpenMP_CXX)
 target_include_directories(calrc PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
 add_subdirectory(HighFive)
@@ -65,8 +70,10 @@ target_link_libraries(calrc HighFive::HighFive)
 
 # UNIT TEST PART
 # enable unit tests under ./validation/
-enable_testing()
-add_subdirectory(validation)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug") # enable sanitizer in debug mode
+    enable_testing()
+    add_subdirectory(validation)
+endif()
 
 # Library
 # add_library(hellolib SHARED src/main.cpp)

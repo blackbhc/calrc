@@ -12,6 +12,7 @@
 #include <string_view>
 using namespace std::string_view_literals;
 using h5file = H5Easy::File;
+using Matrix = std::vector<std::array<double, 3>>;
 
 int main(int argc, char* argv[])
 {
@@ -20,6 +21,7 @@ int main(int argc, char* argv[])
     auto             paras        = parser.get_polar_paras();
     auto             snapFileName = parser.infile();
     auto             rcFileName   = parser.outfile();
+    auto             numThread    = parser.threads();
     // TODO: check the parameters are logically correct (e.g., rmin<rmax,
     // rbinnum>1 ...)
 
@@ -41,57 +43,54 @@ int main(int argc, char* argv[])
 #endif
 
     // create the polar grid
-    PolarGrid targetLocs(paras);
+    PolarGrid testPoints(paras);
 
     // read the hdf5 snapshot file
     h5file snapshot(snapFileName, h5file::ReadOnly);
-    // TODO: add a checker for the HighFive::FileException when file not found
 
     // get the particle number of each type
     auto partNums = H5Easy::loadAttribute<std::vector<int>>(snapshot, "Header",
                                                             "NumPart_ThisFile");
-    /* for (auto num : partNums)
-    {
-        fmt::println("{} ", num);
-    } */
-    // read the coordinates and mass of each type
-    auto n = partNums[1];
-    std::vector<double> mass(n);
-    using Matrix = std::vector<std::array<double, 3>>;
-    Matrix coordinate(n, std::array<double, 3>());
 
-    mass = H5Easy::load<std::vector<double>>(snapshot, "/PartType1/Masses");
-    coordinate = H5Easy::load<Matrix>(snapshot, "/PartType1/Coordinates");
+    // open the log file
+    h5file logFile(rcFileName, h5file::Truncate);
 
-#ifdef DEBUG
-    for (int i = 0; i < 13; i++)
+    for (int i = 0; i < static_cast<int>(partNums.size()); ++i)
     {
-        fmt::println("m={}, (x, y, z)=({}, {}, {})", mass[i], coordinate[i][0],
-                     coordinate[i][1], coordinate[i][2]);
+        auto n = partNums[i];
+
+        if (n <= 0)  // ignore 0 partile types
+        {
+            continue;
+        }
+
+        // read the coordinates and mass of each type
+        std::vector<double> masses(n);                   // container
+        Matrix coordinates(n, std::array<double, 3>());  // container
+        masses = H5Easy::load<std::vector<double>>(
+            snapshot, fmt::format("/PartType{}/Masses", i));
+        coordinates = H5Easy::load<Matrix>(
+            snapshot, fmt::format("/PartType{}/Coordinates", i));
+
+        // calculate the radial force at target positions
+        auto accRs = testPoints.cal_accR_from(masses, coordinates, numThread);
+
+        H5Easy::dump(logFile, fmt::format("/PartType{}/AccRs", i), accRs);
     }
-#endif
-    // get the snapshot data
-    // std::vector<> datasets{read_coordiantes_and_masses()};
 
-    // calculate the radial force at target positions
-    // auto resutls = calculate_radial_force(datasets, target_locs);
+    // write the used rs and phis of the test points
+    H5Easy::dump(logFile, "Rs", testPoints.rs());
+    H5Easy::dump(logFile, "Phis", testPoints.phis());
 
-    // write the results to the log file
-    // H5IO rcFile("output.hdf5"sv, H5IO::filemode::write);
-    // h5io.write_dataset(results);
+    // write the basic parameters
+    H5Easy::dumpAttribute(logFile, "/", "Rmin", paras.rmin);
+    H5Easy::dumpAttribute(logFile, "/", "Rmax", paras.rmax);
+    H5Easy::dumpAttribute(logFile, "/", "RbinNum", paras.rbin + 1);
+    H5Easy::dumpAttribute(logFile, "/", "PhiBinNum", paras.phibin);
 
-    h5file              file(rcFileName, h5file::Truncate);
-    std::vector<double> mock_rs(10, 2.12);
-    std::vector<double> mock_phis(10, 3.14 / 2);
-    std::vector<double> mock_frs(10, 101);
-    H5Easy::dump(file, "rs", mock_rs);
-    H5Easy::dump(file, "phis", mock_phis);
-    H5Easy::dump(file, "frs", mock_frs);
-
-    H5Easy::dumpAttribute(file, "/", "Rmin", 0.0);
-    H5Easy::dumpAttribute(file, "/", "Rmax", 10.0);
-    H5Easy::dumpAttribute(file, "/", "Rbinnum", 20);
-    H5Easy::dumpAttribute(file, "/", "PhiBinnum", 16);
+    // write the bin edges
+    H5Easy::dumpAttribute(logFile, "/", "GridRs", testPoints.rEdges());
+    H5Easy::dumpAttribute(logFile, "/", "GridPhis", testPoints.phiEdges());
 
     return EXIT_SUCCESS;
 }

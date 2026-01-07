@@ -2,6 +2,8 @@
 #include <array>
 #include <cmath>
 #include <numeric>  // for std::inner_product
+#include <omp.h>
+#include <thread>
 #include <vector>
 
 // NOLINTBEGIN(*internal-linkage)
@@ -140,3 +142,50 @@ PolarGrid::PolarGrid(const PolarGridPara& para)
         }
     }
 };
+
+auto PolarGrid::cal_accR_from(
+    const std::vector<double>&                masses,
+    const std::vector<std::array<double, 3>>& coordinates,
+    int numThread) const -> std::vector<double>
+{
+    ( void )numThread;
+    std::vector<double> accR(m_points.size(), 0);
+    // clang-format off
+#pragma omp parallel for num_threads(numThread) default(none) shared(accR, masses, coordinates)
+    for (int i = 0; i < static_cast<int>(m_points.size()); ++i) // i must be int for openmp to work
+    {
+        accR[i] = m_points[i].accR_from(masses, coordinates);  // with default G
+    }
+    // clang-format on
+    return accR;
+}
+
+auto PolarGrid::rs() const -> std::vector<double>
+{
+    std::vector<double> rs;
+    rs.reserve(m_points.size());
+    // create the target filed point
+    for (auto r : m_rbinEdges)
+    {
+        for ([[maybe_unused]] auto phi : m_phibinEdges)
+        {
+            rs.emplace_back(r);
+        }
+    }
+    return rs;
+}
+
+auto PolarGrid::phis() const -> std::vector<double>
+{
+    std::vector<double> phis;
+    phis.reserve(m_points.size());
+    // create the target filed point
+    for ([[maybe_unused]] auto r : m_rbinEdges)
+    {
+        for (auto phi : m_phibinEdges)
+        {
+            phis.emplace_back(phi);
+        }
+    }
+    return phis;
+}
