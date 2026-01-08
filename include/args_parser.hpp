@@ -3,8 +3,7 @@
  * @brief A simple argument parser.
  */
 
-#ifndef ARGS_PARSER_HPP
-#define ARGS_PARSER_HPP
+#pragma once
 #include "grid.hpp"
 #include <string>
 
@@ -45,5 +44,3 @@ private:
     [[nodiscard]] auto phibin() const { return m_phibin; }
     [[nodiscard]] auto rbintype() const { return m_type; }
 };
-
-#endif
