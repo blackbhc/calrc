@@ -30,7 +30,7 @@ are installed, then run the following:
 
 ```shell
 # 1. Clone the repository
-git clone [https://github.com/blackbhc/calrc.git](https://github.com/blackbhc/calrc.git)
+git clone https://github.com/blackbhc/calrc.git --depth=1
 cd calrc
 
 # 2. Initialize submodules
