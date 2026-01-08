@@ -4,8 +4,7 @@
  * position).
  */
 
-#ifndef GRID_HPP
-#define GRID_HPP
+#pragma once
 #include <array>
 #include <cmath>
 #include <cstdint>
@@ -124,4 +123,3 @@ private:
     std::vector<double>    m_rbinEdges;
     std::vector<double>    m_phibinEdges;
 };
-#endif
