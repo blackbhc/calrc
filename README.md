@@ -61,7 +61,7 @@ options:
 -n, --phibin Number of azimuthal bins (int [=16])
 -t, --type Spacing of radial bins (linear/log) (string [=log])
 -c, --thread Thread count for parallel processing (int [=4])
--?, --help Print this message
+-h, --help Print this message
 ```
 
 ## Example
