@@ -3,7 +3,7 @@
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 # set up the compiler, default: use the system compiler
 # should be prior to the project() line, which determines the project language
-#set(CMAKE_CXX_COMPILER g++) # NOTE: configure your compilar option
+# set(CMAKE_CXX_COMPILER g++) # NOTE: configure your compilar option
 # project name, language
 project(calrc LANGUAGES CXX)
 # standard of the C++
@@ -29,6 +29,10 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 add_compile_options("$<$<COMPILE_LANGUAGE:CXX>:-fdiagnostics-color=always>")
 # customized debug flags: default one only includes -g
 set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra -Wpedantic -Werror -DDEBUG")
+# enable native optimization in release mode
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+endif()
 # print fundamental flags: -g, -O, and whether -DNDEBUG
 message(STATUS "C++ flags, Debug configuration: ${CMAKE_CXX_FLAGS_DEBUG}")
 message(STATUS "C++ flags, Release configuration: ${CMAKE_CXX_FLAGS_RELEASE}")
