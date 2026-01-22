@@ -3,7 +3,7 @@
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 # set up the compiler, default: use the system compiler
 # should be prior to the project() line, which determines the project language
-# set(CMAKE_CXX_COMPILER g++) # NOTE: configure your compilar option
+# set(CMAKE_CXX_COMPILER g++) # NOTE: configure your compiler option
 # project name, language
 project(calrc LANGUAGES CXX)
 # standard of the C++
