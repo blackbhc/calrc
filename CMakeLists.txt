@@ -3,7 +3,7 @@
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 # set up the compiler, default: use the system compiler
 # should be prior to the project() line, which determines the project language
-# set(CMAKE_CXX_COMPILER g++) # NOTE: configure your compilar option
+# set(CMAKE_CXX_COMPILER g++) # NOTE: configure your compiler option
 # project name, language
 project(calrc LANGUAGES CXX)
 # standard of the C++
@@ -71,6 +71,11 @@ target_include_directories(calrc PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
 add_subdirectory(highfive)
 target_link_libraries(calrc HighFive::HighFive)
+
+# Python module
+add_library(pymodule SHARED src/py.cpp $<TARGET_OBJECTS:grid_obj>)
+# link required libraries
+target_link_libraries(pymodule OpenMP::OpenMP_CXX)
 
 # UNIT TEST PART
 # enable unit tests under ./validation/

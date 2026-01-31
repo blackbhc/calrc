@@ -17,6 +17,8 @@ at the origin and the galactic disk is aligned with the **X-Y plane**.
 - [HighFive](https://github.com/highfive-devs/highfive.git): A C++ header-only interface for HDF5 (included as a git submodule).
 - [cmdline](https://github.com/tanakh/cmdline): A command-line argument parser (already integrated).
 - [GoogleTest](https://github.com/google/googletest) (Optional): For unit testing when build in DEBUG mode.
+- [cffi Python module](https://pypi.org/project/cffi/) (Optional): For Python bindings, you can
+  install it with `pip/conda install cffi`.
 
 Note: the compiler is configured at the 6th line of ./CMakeLists.txt, default
 to the system compiler. Make sure it supports C++17 and OpenMP before continue.
@@ -42,11 +44,16 @@ cmake -S . -DCMAKE_BUILD_TYPE=Release -B build
 # 4. Compile
 cmake --build build
 The executable will be located in build/calrc. You can move it to any directory in your $PATH.
+
+# 5. (optional) Setup the python module
+python3 -m pip install . --user
 ```
 
 ---
 
 ## Usage
+
+### As a command-line program
 
 Run `./calrc --help` to view the available options:
 
@@ -63,6 +70,14 @@ options:
 -c, --thread Thread count for parallel processing (int [=4])
 -h, --help Print this message
 ```
+
+### As a `Python` module
+
+You can refer to `./src/demo_with_rcm.py` for an example of how to use the Python
+module. It is more flexible: you can define your own test positions and pass them
+directly to the C++ calculator. Alternatively, if you prefer a polar grid similar
+to that used by the command-line program, the module also provides a convenient
+grid generator (see `./src/demo_with_rcm.py` for details).
 
 ## Example
 

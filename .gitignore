@@ -11,3 +11,4 @@ tests
 __pycache__
 .cache*
 compile_commands.json
+src/rcm_gravity*
