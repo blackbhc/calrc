@@ -72,6 +72,11 @@ target_include_directories(calrc PRIVATE ${CMAKE_SOURCE_DIR}/include)
 add_subdirectory(highfive)
 target_link_libraries(calrc HighFive::HighFive)
 
+# Python module
+add_library(pymodule SHARED src/py.cpp $<TARGET_OBJECTS:grid_obj>)
+# link required libraries
+target_link_libraries(pymodule OpenMP::OpenMP_CXX)
+
 # UNIT TEST PART
 # enable unit tests under ./validation/
 if(CMAKE_BUILD_TYPE STREQUAL "Debug") # enable sanitizer in debug mode
