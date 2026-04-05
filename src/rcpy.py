@@ -1,6 +1,6 @@
 import h5py
 import numpy as np
-from cpp_rcm import ffi, lib
+from cpp_rcpy import ffi, lib
 
 
 class PolarGrid(object):
