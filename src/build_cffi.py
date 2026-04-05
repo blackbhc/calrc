@@ -21,7 +21,7 @@ ffi.cdef("""
 """)
 
 ffi.set_source(
-    "cpp_rcm",
+    "cpp_rcpy",
     """
     #include "py.hpp"
     extern "C" {
