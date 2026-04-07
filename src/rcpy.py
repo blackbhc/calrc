@@ -109,8 +109,8 @@ class Calculator(object):
         masses = np.array(fieldMasses, dtype=np.float64)
         ptr = self.__acc_single_parttype(
             np.ascontiguousarray(testPos),
-            masses,
-            coordinates,
+            np.ascontiguousarray(masses),
+            np.ascontiguousarray(coordinates),
             thread=self.thread,
         )
         buf = ffi.buffer(ptr, len(testPos) * ffi.sizeof("double"))
