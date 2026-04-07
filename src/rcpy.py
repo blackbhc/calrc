@@ -58,10 +58,20 @@ class Calculator(object):
             thread,
         )
 
-    def get_accs(self, filename: str, testPos: np.ndarray):
+    def accs_from_snapshot(self, filename: str, testPos: np.ndarray):
+        """
+        Get the radial acceleration from a Gadget4 snapshot file at specified positions.
+        --------------------------------------------------------------------------------
+        filename: the str of the path to the snapshot file.
+        testPos: the locations to measure the radial acceleration.
+
+        Return:
+        -------
+        An dictionary of the accelerations due to each particle types.
+        """
         file = h5py.File(filename, "r")
         part_nums = file["Header"].attrs["NumPart_Total"]
-        accs = {}
+        accRs = {}
         for i, num in enumerate(part_nums):
             if num <= 0:  # bouncer for 0 particle types
                 continue
@@ -75,9 +85,37 @@ class Calculator(object):
                 thread=self.thread,
             )
             buf = ffi.buffer(ptr, len(testPos) * ffi.sizeof("double"))
-            accs[typename] = np.frombuffer(
+            accRs[typename] = np.frombuffer(
                 buf, dtype=np.float64
             ).copy()  # copy() to avoid dangling numpy.ndarray
             lib.release()  # release the allocated memory
         file.close()
-        return accs
+        return accRs
+
+    def accs_from_array(
+        self, fieldCoords: np.ndarray, fieldMasses: np.ndarray, testPos: np.ndarray
+    ):
+        """
+        Get the radial accelerations at specified positions from arrays of field mass points.
+        -------------------------------------------------------------------------------------
+        fieldCoords: coordinates of the mass points.
+        fieldMasses: masses of the mass points.
+
+        Return:
+        -------
+        An array of the accelerations due to the given masses and coordinates of the field mass points.
+        """
+        coordinates = np.array(fieldCoords, dtype=np.float64)
+        masses = np.array(fieldMasses, dtype=np.float64)
+        ptr = self.__acc_single_parttype(
+            np.ascontiguousarray(testPos),
+            masses,
+            coordinates,
+            thread=self.thread,
+        )
+        buf = ffi.buffer(ptr, len(testPos) * ffi.sizeof("double"))
+        accRs = np.frombuffer(
+            buf, dtype=np.float64
+        ).copy()  # copy() to avoid dangling numpy.ndarray
+        lib.release()  # release the allocated memory
+        return accRs

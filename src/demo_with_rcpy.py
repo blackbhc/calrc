@@ -18,7 +18,9 @@ grid = PolarGrid(rmin=0.01, rmax=30, rbinnum=40, phibinnum=16)
 gridCoords = grid.coords()
 
 # calculate the radial accelerations
-accDicts = calculator.get_accs(filename="snapshot_000.hdf5", testPos=gridCoords)
+accDicts = calculator.accs_from_snapshot(
+    filename="snapshot_000.hdf5", testPos=gridCoords
+)
 
 # plot the figure
 Rs, Phis = grid.rs_phis()  # get the grid data
