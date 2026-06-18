@@ -9,88 +9,103 @@
 #include <array>
 #include <cstdio>
 #include <cstdlib>
-#include <fmt/base.h>  // for format print
-#include <highfive/H5Easy.hpp>
+#include <fmt/base.h>
+#include <fmt/format.h>
+#include <highfive/H5File.hpp>
+#include <highfive/H5Group.hpp>
+#include <highfive/H5Attribute.hpp>
+#include <highfive/H5DataSet.hpp>
+#include <highfive/H5DataSpace.hpp>
 #include <stdexcept>
 #include <string>
 #include <vector>
-using h5file = H5Easy::File;
+using h5file = HighFive::File;
 using Matrix = std::vector<std::array<double, 3>>;
 
 int main(int argc, char* argv[])
 {
-    // cmd line parameter parser
     const ArgsParser   parser(argc, argv);
     auto               paras        = parser.get_polar_paras();
     const std::string& snapFileName = parser.infile();
-    // use const reference since HighFive use c++14
     const std::string& rcFileName = parser.outfile();
     auto               numThread  = parser.threads();
-    // NOTE: bouncer for logical validness
+
     if (paras.rmax <= paras.rmin)
-    {
         throw std::runtime_error("rmax must be larger than rmin");
-    }
     if (paras.rmin == 0)
     {
         fmt::print(stderr, "Warning: Get a minimum radius=0, which set grid "
                            "points at the origin point.\n");
         if (paras.type == RbinType::log)
-        {
-            throw std::runtime_error(
-                "logarithmic radial bins is invalid when rmin=0");
-        }
+            throw std::runtime_error("logarithmic radial bins is invalid when rmin=0");
     }
 
-    // create the polar grid
     const PolarGrid testPoints(paras);
-
-    // read the hdf5 snapshot file
     h5file snapshot(snapFileName, h5file::ReadOnly);
 
-    // get the particle number of each type
-    auto partNums = H5Easy::loadAttribute<std::vector<int>>(snapshot, "Header",
-                                                            "NumPart_ThisFile");
+    // Read NumPart_ThisFile attribute from Header group
+    auto headerGrp = snapshot.getGroup("Header");
+    auto attr = headerGrp.getAttribute("NumPart_ThisFile");
+    std::vector<int> partNums;
+    attr.read(partNums);
 
-    // open the log file
     h5file logFile(rcFileName, h5file::Truncate);
 
     for (int i = 0; i < static_cast<int>(partNums.size()); ++i)
     {
-        auto n = partNums[i];  // get the particle numbers
-
-        if (n <= 0)  // ignore 0 partile types
-        {
+        auto n = partNums[i];
+        if (n <= 0)
             continue;
-        }
 
-        // read the coordinates and mass of each type
-        std::vector<double> masses(n);                   // container
-        Matrix coordinates(n, std::array<double, 3>());  // container
-        masses = H5Easy::load<std::vector<double>>(
-            snapshot, fmt::format("/PartType{}/Masses", i));
-        coordinates = H5Easy::load<Matrix>(
-            snapshot, fmt::format("/PartType{}/Coordinates", i));
+        std::vector<double> masses(n);
+        Matrix coordinates(n, std::array<double, 3>());
 
-        // calculate the radial force at target positions
+        auto massDs = snapshot.getDataSet(fmt::format("/PartType{}/Masses", i));
+        massDs.read(masses);
+
+        auto coordDs = snapshot.getDataSet(fmt::format("/PartType{}/Coordinates", i));
+        coordDs.read(coordinates);
+
         auto accRs = testPoints.cal_accR_from(masses, coordinates, numThread);
-        // write the accelerations
-        H5Easy::dump(logFile, fmt::format("/PartType{}/AccRs", i), accRs);
+        auto accDs = logFile.createDataSet<double>(
+            fmt::format("/PartType{}/AccRs", i),
+            HighFive::DataSpace::From(accRs)
+        );
+        accDs.write_raw(accRs.data());
     }
 
-    // write the used rs and phis of the test points
-    H5Easy::dump(logFile, "Rs", testPoints.rs());
-    H5Easy::dump(logFile, "Phis", testPoints.phis());
+    {
+        auto rs = testPoints.rs();
+        auto ds = logFile.createDataSet<double>("Rs", HighFive::DataSpace::From(rs));
+        ds.write_raw(rs.data());
+    }
+    {
+        auto phis = testPoints.phis();
+        auto ds = logFile.createDataSet<double>("Phis", HighFive::DataSpace::From(phis));
+        ds.write_raw(phis.data());
+    }
 
-    // write the basic parameters
-    H5Easy::dumpAttribute(logFile, "/", "Rmin", paras.rmin);
-    H5Easy::dumpAttribute(logFile, "/", "Rmax", paras.rmax);
-    H5Easy::dumpAttribute(logFile, "/", "RBinNum", paras.rbin + 1);
-    H5Easy::dumpAttribute(logFile, "/", "PhiBinNum", paras.phibin);
+    logFile.createAttribute<double>("Rmin",
+        HighFive::DataSpace::From(paras.rmin)).write(paras.rmin);
+    logFile.createAttribute<double>("Rmax",
+        HighFive::DataSpace::From(paras.rmax)).write(paras.rmax);
+    logFile.createAttribute<int>("RBinNum",
+        HighFive::DataSpace::From(paras.rbin + 1)).write(paras.rbin + 1);
+    logFile.createAttribute<int>("PhiBinNum",
+        HighFive::DataSpace::From(paras.phibin)).write(paras.phibin);
 
-    // write the bin edges
-    H5Easy::dumpAttribute(logFile, "/", "GridRs", testPoints.rEdges());
-    H5Easy::dumpAttribute(logFile, "/", "GridPhis", testPoints.phiEdges());
+    {
+        auto edges = testPoints.rEdges();
+        auto a = logFile.createAttribute<double>("GridRs",
+            HighFive::DataSpace::From(edges));
+        a.write_raw(edges.data());
+    }
+    {
+        auto edges = testPoints.phiEdges();
+        auto a = logFile.createAttribute<double>("GridPhis",
+            HighFive::DataSpace::From(edges));
+        a.write_raw(edges.data());
+    }
 
     return EXIT_SUCCESS;
 }
