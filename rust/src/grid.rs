@@ -108,11 +108,11 @@ impl GridPoint {
         let cp = coord_flat.as_ptr();
 
         for i in 0..n {
-            // SAFETY: caller guarantees length match
-            let m = *mp.add(i);
-            let cx = *cp.add(3 * i);
-            let cy = *cp.add(3 * i + 1);
-            let cz = *cp.add(3 * i + 2);
+            // SAFETY: caller guarantees both slices have length n
+            let m = unsafe { *mp.add(i) };
+            let cx = unsafe { *cp.add(3 * i) };
+            let cy = unsafe { *cp.add(3 * i + 1) };
+            let cz = unsafe { *cp.add(3 * i + 2) };
 
             let dx = cx - self.x;
             let dy = cy - self.y;
@@ -142,6 +142,7 @@ pub struct PolarGrid {
     points: Vec<GridPoint>,
     rbin_edges: Vec<f64>,
     phibin_edges: Vec<f64>,
+    #[allow(dead_code)]
     rbin: i32,
     phibin: i32,
 }
