@@ -1,0 +1,17 @@
+[package]
+name = "calrc"
+version = "0.1.0"
+edition = "2024"
+description = "Rotation curve calculator for GADGET-4 HDF5 snapshots"
+authors = ["chenbinhui"]
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+hdf5 = { version = "0.12", package = "hdf5-metno" }
+rayon = "1"
+anyhow = "1"
+
+[profile.release]
+codegen-units = 1
+lto = "fat"
+opt-level = 3
