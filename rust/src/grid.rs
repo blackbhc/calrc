@@ -93,7 +93,7 @@ impl GridPoint {
     /// The caller guarantees both invariants, so we deliberately skip all
     /// bounds checking inside the critical loop.
     #[inline(always)]
-    unsafe fn acc_r_from_flat_unchecked(
+    pub unsafe fn acc_r_from_flat_unchecked(
         &self,
         masses: &[f64],
         coord_flat: &[f64],

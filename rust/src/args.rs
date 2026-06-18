@@ -4,7 +4,7 @@
 
 use clap::Parser;
 
-use crate::grid::{PolarGridPara, RbinType};
+use calrc::{PolarGridPara, RbinType};
 
 #[derive(Parser, Debug)]
 #[command(
