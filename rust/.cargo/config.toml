@@ -1,0 +1,13 @@
+# HDF5_DIR must be set to the HDF5 installation prefix.
+# On macOS (Homebrew): /opt/homebrew
+# On Linux (apt):      /usr/lib/x86_64-linux-gnu/hdf5/serial  (or find with `pkg-config --variable=prefix hdf5`)
+# On Linux (conda):    $CONDA_PREFIX
+#
+# Set it either as an environment variable or uncomment the relevant line below.
+#
+# macOS Homebrew:
+# HDF5_DIR = "/opt/homebrew"
+# Linux apt:
+# HDF5_DIR = "/usr/lib/x86_64-linux-gnu/hdf5/serial"
+# Linux conda (adjust to your environment):
+# HDF5_DIR = "/home/user/miniconda3"
