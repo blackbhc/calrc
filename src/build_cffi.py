@@ -43,8 +43,8 @@ ffi.set_source(
     libraries=["pymodule"],
     library_dirs=[lib_dir],
     include_dirs=[include_dir],
-    # path to run time lib
-    extra_link_args=["-Wl,-rpath," + lib_dir],
+    # Use @loader_path so the .so finds libpymodule.dylib in the same directory
+    extra_link_args=["-Wl,-rpath,@loader_path"],
 )
 
 if __name__ == "__main__":
